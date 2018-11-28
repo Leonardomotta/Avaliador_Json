@@ -1,11 +1,17 @@
+{-@TODO resolver o tipo generico A-}
+data A  =    Just A | Nothing deriving (Show)
+
 data Json = Json {
                     chave :: [String],
-                    valor :: [String] {- @TODO modificar para um tipo generico-}
+                    valor :: [A] {- @TODO modificar para um tipo generico-}
                             } deriving Show
 
+
 {-retorna o conjunto de chaves-}
+chaves :: Json -> [String]
 chaves (Json chave _) = chave
 {-retorna o conjuto de valores-}
+valores :: Json -> [A]
 valores (Json _ valor) = valor
 
 {-retorna o valor do elemento com determinada chave-}
@@ -27,10 +33,10 @@ indexBykeyAux array a x = if (head array == a) then x
 {-@TODO-}
 {- deve tratar o atributo caso seja diferente de string -}
 stringfy (Json chaves valores) = "{" ++make chaves valores++ "}"
-make::[String] -> [String] -> String
+make::[String] -> [A] -> String
 make [] [] = ""
-make a b = head a ++ ":" ++ head b ++ x (tail a)(tail b) ++ make (tail a) (tail b)
-x::[String] -> [String] -> String
+make a b = show(head a) ++ ":" ++  show(head b) ++ x (tail a)(tail b) ++ make (tail a) (tail b)
+x::[String] -> [A] -> String
 x [] [] = " "
 x _ _ = ","
 
