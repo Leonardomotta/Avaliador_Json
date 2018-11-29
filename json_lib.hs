@@ -1,43 +1,47 @@
-{-@TODO resolver o tipo generico A-}
-data A  =    Just A | Nothing deriving (Show)
-
-data Json = Json {
-                    chave :: [String],
-                    valor :: [A] {- @TODO modificar para um tipo generico-}
-                            } deriving Show
+import Data.Typeable
+import Data.List.Split
 
 
-{-retorna o conjunto de chaves-}
-chaves :: Json -> [String]
-chaves (Json chave _) = chave
-{-retorna o conjuto de valores-}
-valores :: Json -> [A]
-valores (Json _ valor) = valor
+{-Conjunto de valores possiveis para o Json-}
+data Jvalue  =   Js String | Ji Integer | Jb Bool | Jf Float | Jsa [String] |
+ Jia [Integer] | Jba [Bool] | Jfa [Float]| Jn |Jo Json deriving (Show, Eq, Ord)
+{-Par chave e valor Para atributos Json-}
+data Jatribute = Jatribute (String , Jvalue) deriving (Show, Eq, Ord)
+{-Objeto Json , composto de um array de atributos-}
+data Json = Json [Jatribute] deriving (Show, Eq, Ord)
 
-{-retorna o valor do elemento com determinada chave-}
+getJatribute :: Jatribute -> (String,Jvalue)
+getJatribute  (Jatribute x) = x
 
-value (Json chaves valores) chave = elemByIndex valores (indexBykey chaves chave)
+getJson :: Json -> [Jatribute]
+getJson  (Json a) = a
+
+getString :: Jvalue -> String
+getString (Js str) = str
+
+getInteger :: Jvalue -> Integer
+getInteger (Ji int) =int
+
+getBool :: Jvalue -> Bool
+getBool (Jb bool) = bool
+
+getFloat :: Jvalue -> Float
+getFloat (Jf float) = float
+
+getArrayString :: Jvalue -> [String]
+getArrayString (Jsa a) = a
+
+getArrayInteger :: Jvalue -> [Integer]
+getArrayInteger (Jia i) = i
+
+getArrayBool :: Jvalue -> [Bool]
+getArrayBool (Jba b) = b
+
+getArrayFloat :: Jvalue -> [Float]
+getArrayFloat (Jfa f) = f
 
 
-{-retorna o elemento pelo indice -}
 
-elemByIndex array 0 = head array
-elemByIndex array x = elemByIndex (tail array) (x-1)
 
-{-retorna o indice do elemnto-}
-indexBykey array a = indexBykeyAux array a 0
-indexBykeyAux array a x = if (head array == a) then x
-                          else indexBykeyAux (tail array) a (x+1)
-
-{-stringfy-}
-{-@TODO-}
-{- deve tratar o atributo caso seja diferente de string -}
-stringfy (Json chaves valores) = "{" ++make chaves valores++ "}"
-make::[String] -> [A] -> String
-make [] [] = ""
-make a b = show(head a) ++ ":" ++  show(head b) ++ x (tail a)(tail b) ++ make (tail a) (tail b)
-x::[String] -> [A] -> String
-x [] [] = " "
-x _ _ = ","
 
 
