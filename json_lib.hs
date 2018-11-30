@@ -5,8 +5,8 @@ import Text.ParserCombinators.Parsec hiding ((<|>),many)
 
 {-Json-}
 {-Conjunto de valores possiveis para o Json-}
-data Jvalue  =   Js String | Ji Integer | Jb Bool | Jf Float | Jsa [String] |
- Jia [Integer] | Jba [Bool] | Jfa [Float]| Jn |Jo Json | Joa [Json] deriving (Show, Eq, Ord)
+data Jvalue  =   Js String | Jb Bool | Jd Double | Jsa [String]
+  | Ja [Jvalue]| Jn |Jo Json  deriving (Show, Eq, Ord)
 {-Par chave e valor Para atributos Json-}
 data Jatribute = Jatribute (String , Jvalue) deriving (Show, Eq, Ord)
 {-Objeto Json , composto de um array de atributos-}
@@ -21,26 +21,17 @@ getJson  (Json a) = a
 getString :: Jvalue -> String
 getString (Js str) = str
 
-getInteger :: Jvalue -> Integer
-getInteger (Ji int) =int
-
 getBool :: Jvalue -> Bool
 getBool (Jb bool) = bool
 
-getFloat :: Jvalue -> Float
-getFloat (Jf float) = float
+getDouble :: Jvalue -> Double
+getDouble (Jd double) = double
 
-getArrayString :: Jvalue -> [String]
-getArrayString (Jsa a) = a
+getInteger :: Jvalue -> Integer
+getInteger (Jd integer) = truncate integer
 
-getArrayInteger :: Jvalue -> [Integer]
-getArrayInteger (Jia i) = i
-
-getArrayBool :: Jvalue -> [Bool]
-getArrayBool (Jba b) = b
-
-getArrayFloat :: Jvalue -> [Float]
-getArrayFloat (Jfa f) = f
+getArray :: Jvalue -> [Jvalue]
+getArray (Ja elem) = elem
 
 {-fim do Json-}
 
@@ -77,6 +68,20 @@ stringLiteral = char '"' *> (many (noneOf ['"']))<* char '"'
 
 jstring :: Parser Jvalue
 jstring = Js <$> stringLiteral
+
+
+{-
+    Integer
+-}
+
+{-double :: Parser Double
+double = 
+
+jDouble :: Parser Jvalue
+jDouble  = Jd <$> double-}
+
+
+
 
 
 
