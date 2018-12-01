@@ -11,7 +11,7 @@ import Text.ParserCombinators.Parsec hiding ((<|>),many)
 
 {-Json-}
 {-Conjunto de valores possiveis para o Json-}
-data Jvalue  = Js String | Jb Bool  | Jsa [String]
+data Jvalue  = Js String | Jb Bool  
   | Ja [Jvalue] | Jn |Jo Json | Jnum Double  deriving (Show, Eq, Ord)
 {-Par chave e valor Para atributos Json-}
 data Jatribute = Jatribute (String , Jvalue) deriving (Show, Eq, Ord)
@@ -82,7 +82,7 @@ jstring = Js <$> stringLiteral
 -}
 
 jsonValue :: Parser Jvalue
-jsonValue = jstring <|> jsonBool <|> jsonArray <|> jsonDouble 
+jsonValue = jstring <|> jsonBool <|> jsonArray <|> jsonDouble <|> jsonObject
 
 
 atributeParse :: Parser (String,Jvalue)
