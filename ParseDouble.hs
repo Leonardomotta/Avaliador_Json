@@ -1,3 +1,6 @@
+module ParseDouble where
+
+
 import Control.Monad
 
 import Text.Parsec

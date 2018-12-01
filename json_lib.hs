@@ -1,3 +1,7 @@
+
+
+import ParseDouble
+
 import Data.Typeable
 import Control.Applicative
 import Control.Monad
