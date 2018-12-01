@@ -1,4 +1,4 @@
-
+module Json_lib where
 
 import ParseDouble
 
@@ -121,7 +121,7 @@ numberDouble num = Jnum (num)
 
 -----------------------------------------
 
-x = read <$> many1 digit
+
 
 {-
     Integer
