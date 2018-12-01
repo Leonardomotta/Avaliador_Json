@@ -11,7 +11,7 @@ import Text.ParserCombinators.Parsec hiding ((<|>),many)
 
 {-Json-}
 {-Conjunto de valores possiveis para o Json-}
-data Jvalue  = Js String | Jb Bool | Jd Double | Jsa [String]
+data Jvalue  = Js String | Jb Bool  | Jsa [String]
   | Ja [Jvalue] | Jn |Jo Json | Jnum Double  deriving (Show, Eq, Ord)
 {-Par chave e valor Para atributos Json-}
 data Jatribute = Jatribute (String , Jvalue) deriving (Show, Eq, Ord)
@@ -31,10 +31,10 @@ getBool :: Jvalue -> Bool
 getBool (Jb bool) = bool
 
 getDouble :: Jvalue -> Double
-getDouble (Jd double) = double
+getDouble (Jnum double) = double
 
 getInteger :: Jvalue -> Integer
-getInteger (Jd integer) = truncate integer
+getInteger (Jnum integer) = truncate integer
 
 getArray :: Jvalue -> [Jvalue]
 getArray (Ja elem) = elem
@@ -82,14 +82,34 @@ jstring = Js <$> stringLiteral
 -}
 
 jsonValue :: Parser Jvalue
-jsonValue = jstring <|> jsonBool <|> jsonArray
+jsonValue = jstring <|> jsonBool <|> jsonArray <|> jsonDouble 
 
+
+atributeParse :: Parser (String,Jvalue)
+atributeParse = do
+  key <- stringLiteral
+  (char ':')
+  value <- jsonValue
+  return (key,value)
+
+jsonAtribute :: Parser Jatribute
+jsonAtribute = Jatribute <$> atributeParse
+
+
+objectParse :: Parser [Jatribute]
+objectParse = (char '{' )*> (jsonAtribute `sepBy` (char ',')) <*(char '}')
+
+
+ 
 
 
 {-
   Arrays: Em Json, arrays podem ser de diferentes tipos, diferente de haskell.
   Logo, o array em haskell deve ser de Jvalue.
 -}
+
+jsonObject :: Parser Json
+jsonObject =  Json <$> objectParse
 
 array :: Parser [Jvalue]
 array = (char '[') *> (jsonValue `sepBy` (char ',')) <* (char ']')
@@ -116,29 +136,15 @@ getParserValue (Right a) = a
 
 
 
-numberDouble :: Double -> Jvalue
-numberDouble num = Jnum (num)
+jsonDouble :: Parser Jvalue
+jsonDouble = Jnum <$> double
 
 -----------------------------------------
 
 
 
-{-
-    Integer
--}
-
-{-double :: Parser Double
-double = 
-
-jDouble :: Parser Jvalue
-jDouble  = Jd <$> double-}
 
 
 
 
 
-
-
-
-
-{-jsonObject = 0 <$> ((char '{')*>(Jvalue `sepBy` (char ','))<*(char '}'))-}
