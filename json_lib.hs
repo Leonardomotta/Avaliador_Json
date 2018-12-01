@@ -1,7 +1,9 @@
 import Data.Typeable
 import Control.Applicative
 import Control.Monad
+import Text.Read (readMaybe)
 import Text.ParserCombinators.Parsec hiding ((<|>),many)
+
 
 {-Json-}
 {-Conjunto de valores possiveis para o Json-}
@@ -105,20 +107,17 @@ Numeros
 
 --AUXILIARES-----------------------------
 -- Um numero vai ser representado primeiramente por uma string
-numberString :: Parser String
-numberString = many (oneOf ['0'..'9'])
 
 getParserValue (Right a) = a
 
-readStringAsDouble str = read str :: Double
+
 
 numberDouble :: Double -> Jvalue
 numberDouble num = Jnum (num)
 
 -----------------------------------------
 
-
-
+x = read <$> many1 digit
 
 {-
     Integer
