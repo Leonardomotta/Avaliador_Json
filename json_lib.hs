@@ -5,8 +5,8 @@ import Text.ParserCombinators.Parsec hiding ((<|>),many)
 
 {-Json-}
 {-Conjunto de valores possiveis para o Json-}
-data Jvalue  =   Js String | Jb Bool | Jd Double | Jsa [String]
-  | Ja [Jvalue]| Jn |Jo Json  deriving (Show, Eq, Ord)
+data Jvalue  = Js String | Jb Bool | Jd Double | Jsa [String]
+  | Ja [Jvalue] | Jn |Jo Json | Jnum Double  deriving (Show, Eq, Ord)
 {-Par chave e valor Para atributos Json-}
 data Jatribute = Jatribute (String , Jvalue) deriving (Show, Eq, Ord)
 {-Objeto Json , composto de um array de atributos-}
@@ -68,6 +68,56 @@ stringLiteral = char '"' *> (many (noneOf ['"']))<* char '"'
 
 jstring :: Parser Jvalue
 jstring = Js <$> stringLiteral
+
+
+
+{-
+  Tenta casar com algum dos valores em json e retornar um "Parser Jvalue"
+-}
+
+jsonValue :: Parser Jvalue
+jsonValue = jstring <|> jsonBool <|> jsonArray
+
+
+
+{-
+  Arrays: Em Json, arrays podem ser de diferentes tipos, diferente de haskell.
+  Logo, o array em haskell deve ser de Jvalue.
+-}
+
+array :: Parser [Jvalue]
+array = (char '[') *> (jsonValue `sepBy` (char ',')) <* (char ']')
+
+
+
+jsonArray :: Parser Jvalue
+jsonArray = Ja <$> array
+
+
+{-
+
+Numeros
+
+-}
+
+--number :: Parser Jvalue
+--number = numberDouble (readStringAsDouble (getParserValue numberString))
+
+--AUXILIARES-----------------------------
+-- Um numero vai ser representado primeiramente por uma string
+numberString :: Parser String
+numberString = many (oneOf ['0'..'9'])
+
+getParserValue (Right a) = a
+
+readStringAsDouble str = read str :: Double
+
+numberDouble :: Double -> Jvalue
+numberDouble num = Jnum (num)
+
+-----------------------------------------
+
+
 
 
 {-
