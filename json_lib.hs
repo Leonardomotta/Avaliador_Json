@@ -82,7 +82,7 @@ jstring = Js <$> stringLiteral
 -}
 
 jsonValue :: Parser Jvalue
-jsonValue = jstring <|> jsonBool <|> jsonArray <|> jsonDouble
+jsonValue = jstring <|> jsonBool <|> jsonArray <|> jsonDouble <|> jsonObjectValue
 
 
 atributeParse :: Parser (String,Jvalue)
@@ -110,6 +110,9 @@ objectParse = (char '{' )*> (jsonAtribute `sepBy` (char ',')) <*(char '}')
 
 jsonObject :: Parser Json
 jsonObject =  Json <$> objectParse
+
+jsonObjectValue :: Parser Jvalue
+jsonObjectValue = Jo <$> jsonObject
 
 array :: Parser [Jvalue]
 array = (char '[') *> (jsonValue `sepBy` (char ',')) <* (char ']')
