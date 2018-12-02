@@ -88,6 +88,7 @@ jstring = Js <$> stringLiteral
 atributeParse :: Parser (String,Jvalue)
 atributeParse = do
   key <- stringLiteral
+  (spaces)
   (char ':')
   value <- jsonValue
   return (key,value)
@@ -167,11 +168,12 @@ trim xs = removeBlank xs ""
 jsonParse :: String -> Json
 jsonParse str = getParserValue(parse jsonObject "erro" (trim str))
 
--- recebe string referente ao path e retorna um IO(jvalue puro) gerado de acordo com o arquivo--
+-- recebe string referente ao path e retorna um IO(jvalue) gerado de acordo com o arquivo--
 
+jsonFileParser :: String -> IO(Jvalue)
 jsonFileParser path = do
                       io <- (getJsonFile path)
-                      return  (getParserValue io)
+                      return  ((getParserValue io))
 
 
 
