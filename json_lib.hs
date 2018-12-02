@@ -42,7 +42,7 @@ getArray (Ja elem) = elem
 
 {-Parse principal para valores -}
 jsonValue :: Parser Jvalue
-jsonValue = spaces*>(jstring <|> jsonBool <|> jsonArray <|> jsonDouble <|> jsonObjectValue) <* spaces
+jsonValue = spaces*>(jstring <|> jsonBool <|> jsonArray <|> jsonDouble <|> jsonObjectValue <|> jsonNull ) <* spaces
 
 
 
@@ -127,6 +127,7 @@ jsonDouble = Jnum <$> double
 {-fim do parser para numeros-}
 
 
+
 {-FUNCOES DE ACESSO AOS ATRIBUTOS-}
 getJsonAttributeValue :: Json -> String -> Maybe Jvalue
 getJsonAttributeValue (Json atributos) atrName = if (length atributos == 0) then Nothing
@@ -169,6 +170,16 @@ jsonFileParser path = parseFromFile jsonValue path
 
 {-fim-}
 
+
+{-Parser para null-}
+
+jnull :: Parser String
+jnull  = string "null"
+
+jsonNull :: Parser Jvalue
+jsonNull = jnull *> pure Jn 
+
+{-fim-}
 
 {-STRINGIFY-}
 
