@@ -82,7 +82,7 @@ jstring = Js <$> stringLiteral
 -}
 
 jsonValue :: Parser Jvalue
-jsonValue = jstring <|> jsonBool <|> jsonArray <|> jsonDouble <|> jsonObject
+jsonValue = jstring <|> jsonBool <|> jsonArray <|> jsonDouble
 
 
 atributeParse :: Parser (String,Jvalue)
@@ -139,7 +139,32 @@ getParserValue (Right a) = a
 jsonDouble :: Parser Jvalue
 jsonDouble = Jnum <$> double
 
------------------------------------------
+{-
+  FUNCOES DE ACESSO AOS ATRIBUTOS
+-}
+getJsonAttributeValue :: Json -> String -> Maybe Jvalue
+getJsonAttributeValue (Json atributos) atrName = if (length atributos == 0) then Nothing
+                                              else if((getAttributeName (head atributos)) == atrName) 
+                                                then Just (getAttributeValue (head atributos))
+                                              else getJsonAttributeValue (Json (tail atributos)) atrName
+
+
+--Auxiliares--
+--Dado um atributo do Json, pega o valor dele.
+getAttributeValue :: Jatribute -> Jvalue
+getAttributeValue (Jatribute (name, value)) = value
+--Dado um atributo do Json, pega sua key/nome dele
+getAttributeName :: Jatribute -> String
+getAttributeName (Jatribute (name, value)) = name
+
+
+{-
+  STRINGIFY
+-}
+
+
+
+
 
 
 
