@@ -42,7 +42,7 @@ getArray (Ja elem) = elem
 
 {-Parse principal para valores -}
 jsonValue :: Parser Jvalue
-jsonValue = spaces*>(jstring <|> jsonBool <|> jsonArray <|> jsonDouble <|> jsonObjectValue <|> jsonNull ) <* spaces
+jsonValue = spaces*>(jsonNull <|> jstring <|> jsonBool <|> jsonArray <|> jsonDouble <|> jsonObjectValue  ) <* spaces
 
 
 
