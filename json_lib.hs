@@ -167,7 +167,17 @@ trim xs = removeBlank xs ""
 jsonParse :: String -> Json
 jsonParse str = getParserValue(parse jsonObject "erro" (trim str))
 
-jsonFileParser path = parseFromFile jsonValue path
+-- recebe string referente ao path e retorna um IO(jvalue puro) gerado de acordo com o arquivo--
+
+jsonFileParser path = do
+                      io <- (getJsonFile path)
+                      return  (getParserValue io)
+
+
+
+
+-- metodo auxiliar faz o parse e retorna um IO (Either ParseError Jvalue)--
+getJsonFile str  = parseFromFile jsonValue str
 
 {-fim-}
 
