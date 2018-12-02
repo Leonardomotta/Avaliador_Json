@@ -6,6 +6,7 @@ import Control.Applicative
 import Control.Monad
 import Text.Read (readMaybe)
 import Text.ParserCombinators.Parsec hiding ((<|>),many)
+import Data.List
 
 
 {-Json-}
@@ -181,11 +182,32 @@ jsonNull = jnull *> pure Jn
 
 {-fim-}
 
-{-STRINGIFY-}
 
 
 
+{-
+    STRINGIFY
+    Usage examples: 
+    - stringifyJson (Json [Jatribute ("nome", Js "Pedro"), Jatribute ("idade", Jnum 20)])
+    - stringifyJson (Json [Jatribute ("nome", Js "Pedro"), Jatribute ("info", Jo (Json [Jatribute ("idade", Jnum 20)])), Jatribute ("idade", Jnum 20)])
+-}
+stringifyJson :: Json -> String
+stringifyJson (Json attributes) = "{" ++ (intercalate ", " (map (stringifyAttribute) (attributes))) ++ "}"  
 
+
+--Auxiliar: Recebe um Jatribute em e retorna o seu formato correto em String
+stringifyAttribute :: Jatribute -> String
+stringifyAttribute (Jatribute (key, value)) = key ++ ": " ++ (stringifyValue value)
+
+--Auxiliares: Recebem um Jvalue e retornam seu valor como em string, usando pattern matching
+stringifyValue :: Jvalue -> String --Usage example: stringifyValue (Js "Hello")
+stringifyValue (Js string) = string
+stringifyValue (Jb True) = "true"
+stringifyValue (Jb False) = "false"
+stringifyValue (Jnum number) = (show number)
+stringifyValue (Jn) = "null"
+stringifyValue (Ja valuesArray) = "[" ++ (intercalate "," (map (stringifyValue) (valuesArray))) ++ "]"
+stringifyValue (Jo json) = stringifyJson json 
 
 
 
