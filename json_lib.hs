@@ -1,7 +1,6 @@
 module Json_lib where
 
 import ParseDouble
-
 import Data.Typeable
 import Control.Applicative
 import Control.Monad
@@ -41,6 +40,10 @@ getArray (Ja elem) = elem
 
 {-fim do Json-}
 
+{-Parse principal para valores -}
+jsonValue :: Parser Jvalue
+jsonValue = spaces*>(jstring <|> jsonBool <|> jsonArray <|> jsonDouble <|> jsonObjectValue) <* spaces
+
 
 
 {-Faz parse de bool -}
@@ -67,24 +70,20 @@ jsonBool = Jb <$> bool {-mapeia a função bool para o texto lido do  parser-}
 {-fim do parse para bool -}    
 
 
-{-retorna o valor literal lido-}
+{-Parse para string-}
 stringLiteral :: Parser String
-stringLiteral = char '"' *> (many (noneOf ['"']))<* char '"'
+stringLiteral = spaces*> char '"' *> spaces*> (many (noneOf ['"']))<*spaces<* char '"'
 
 
 jstring :: Parser Jvalue
 jstring = Js <$> stringLiteral
 
+{-fim do parse para string-}
 
 
-{-
-  Tenta casar com algum dos valores em json e retornar um "Parser Jvalue"
--}
-
-jsonValue :: Parser Jvalue
-jsonValue = jstring <|> jsonBool <|> jsonArray <|> jsonDouble <|> jsonObjectValue
 
 
+{-Parser para atributos-}
 atributeParse :: Parser (String,Jvalue)
 atributeParse = do
   key <- stringLiteral
@@ -94,57 +93,41 @@ atributeParse = do
 
 jsonAtribute :: Parser Jatribute
 jsonAtribute = Jatribute <$> atributeParse
+{-Fim do parse par atributos-}
 
+
+
+
+ {-Parse para objetos-}
 
 objectParse :: Parser [Jatribute]
-objectParse = (char '{' )*> (jsonAtribute `sepBy` (char ',')) <*(char '}')
+objectParse = spaces*>(char '{' )*> spaces*> (jsonAtribute  `sepBy` (char ','))<*spaces <*(char '}')
 
-
- 
-
-
-{-
-  Arrays: Em Json, arrays podem ser de diferentes tipos, diferente de haskell.
-  Logo, o array em haskell deve ser de Jvalue.
--}
-
-jsonObject :: Parser Json
+jsonObject :: Parser Json   {-Deriva o objeto principal -}
 jsonObject =  Json <$> objectParse
 
 jsonObjectValue :: Parser Jvalue
-jsonObjectValue = Jo <$> jsonObject
+jsonObjectValue = Jo <$> jsonObject {-Deriva valores para o atributo que tb podem ser json-}
 
+{- Fim do parser para objetos-}
+
+{-Parse para array-}
 array :: Parser [Jvalue]
 array = (char '[') *> (jsonValue `sepBy` (char ',')) <* (char ']')
 
-
-
 jsonArray :: Parser Jvalue
 jsonArray = Ja <$> array
+{-Fim do parse para array-}
 
-
-{-
-
-Numeros
-
--}
-
---number :: Parser Jvalue
---number = numberDouble (readStringAsDouble (getParserValue numberString))
-
---AUXILIARES-----------------------------
--- Um numero vai ser representado primeiramente por uma string
-
-getParserValue (Right a) = a
-
-
+{-Parser para numeros-}
 
 jsonDouble :: Parser Jvalue
 jsonDouble = Jnum <$> double
 
-{-
-  FUNCOES DE ACESSO AOS ATRIBUTOS
--}
+{-fim do parser para numeros-}
+
+
+{-FUNCOES DE ACESSO AOS ATRIBUTOS-}
 getJsonAttributeValue :: Json -> String -> Maybe Jvalue
 getJsonAttributeValue (Json atributos) atrName = if (length atributos == 0) then Nothing
                                               else if((getAttributeName (head atributos)) == atrName) 
@@ -159,11 +142,35 @@ getAttributeValue (Jatribute (name, value)) = value
 --Dado um atributo do Json, pega sua key/nome dele
 getAttributeName :: Jatribute -> String
 getAttributeName (Jatribute (name, value)) = name
+--Dado um Parser correto retorna seu valor
+getParserValue (Right a) = a
 
 
-{-
-  STRINGIFY
--}
+--remove espaços em branco--
+
+removeBlank :: [Char] -> [Char] -> [Char]
+removeBlank [] res = res
+removeBlank (x:xs) res = removeBlank xs (res ++ (if x == ' ' then "" else [x]))
+
+trim :: [Char] -> [Char]
+trim xs = removeBlank xs ""
+
+
+
+{-Fim das funções de acesso-}
+
+{-Utilitarios-}
+
+--recebe um string e constroi um Json a partir dela--
+jsonParse :: String -> Json
+jsonParse str = getParserValue(parse jsonObject "erro" (trim str))
+
+jsonFileParser path = parseFromFile jsonValue path
+
+{-fim-}
+
+
+{-STRINGIFY-}
 
 
 
