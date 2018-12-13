@@ -29,6 +29,6 @@ stringifyJson :: Json -> String
 
 ### Para uso, basta apenas importar o módulo Json_lib.
 
-####Desenvolvido por: Pedro Guedes, Leonardo Mota e Alysson Costa
+#### Desenvolvido por: Pedro Guedes, Leonardo Mota e Alysson Costa
 
 
