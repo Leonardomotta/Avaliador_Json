@@ -11,7 +11,7 @@
 getJsonAttributeValue :: Json -> String -> Maybe Jvalue
 ```
 
-*  Recebe uma String referente ao path do arquivo que representa o Json e retorna um IO(Jvalue) gerado de acordo com o arquivo (Currently inconsistent)
+*  Recebe uma String referente ao path do arquivo que representa o Json e retorna um IO(Jvalue) gerado de acordo com o arquivo (Atualmente inconsistente)
 ```
 jsonFileParser :: String -> IO(Jvalue)
 ```
@@ -25,5 +25,10 @@ jsonParse :: String -> Json
 ```
 stringifyJson :: Json -> String
 ```
+
+
+### Para uso, basta apenas importar o módulo Json_lib.
+
+####Desenvolvido por: Pedro Guedes, Leonardo Mota e Alysson Costa
 
 
