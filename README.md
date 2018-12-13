@@ -3,6 +3,17 @@
 
 #### Essa biblioteca foi produzida na disciplina de Programação Funcional, do curso de Ciência da Computação - UFCG. Ela é essencialmente um Parser de Json para Haskell e vice-versa. 
 
+#### Definição do tipo de dado Json em Haskell, usado pela biblioteca: 
+
+```
+data Jvalue  = Js String | Jb Bool  
+  | Ja [Jvalue] | Jn |Jo Json | Jnum Double  deriving (Show, Eq, Ord)
+
+data Jatribute = Jatribute (String , Jvalue) deriving (Show, Eq, Ord)
+
+data Json = Json [Jatribute] deriving (Show, Eq, Or
+```
+
 
 #### Funções disponíveis:
 
